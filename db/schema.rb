@@ -38,8 +38,10 @@ ActiveRecord::Schema.define(:version => 20131016034751) do
     t.integer  "city_id"
     t.string   "lat"
     t.string   "long"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.string   "name"
+    t.string   "description"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
   end
 
 end

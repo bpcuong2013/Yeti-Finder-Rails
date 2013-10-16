@@ -3,4 +3,10 @@ class YetiFindingController < ApplicationController
   
   def index
   end
+  
+  def detectDevice
+    longitude = params[:longitude]
+    latitude = params[:latitude]
+    deviceId = params[:deviceId]
+  end
 end

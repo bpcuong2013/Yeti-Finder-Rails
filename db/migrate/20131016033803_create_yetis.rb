@@ -4,6 +4,8 @@ class CreateYetis < ActiveRecord::Migration
       t.integer :city_id
       t.string :lat
       t.string :long
+      t.string :name
+      t.string :description
 
       t.timestamps
     end
