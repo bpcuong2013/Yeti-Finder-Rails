@@ -15,7 +15,13 @@ class YetiFindingController < ApplicationController
     
     if city == nil
       city = City.new :name => city_name
-      city.save      
+      city.save
+      
+      if FoursquareHelper.SELECTED_SEARCH_TERM == ""
+        FoursquareHelper.new.selectSearchTerm()
+      end
+      
+      AppHelper.new.createNewYetis(city.id, city_name, FoursquareHelper.SELECTED_SEARCH_TERM)
     end
     
     returnedInfo = { }
