@@ -17,7 +17,7 @@ every(1.day, 'generateRandomYetisDaily.job', :at => '23:59') {
   
   if (cities.size > 0)
     cities.each do |city|
-      ScheduleWorker.perform_async()
+      ScheduleWorker.perform_async(city.id, city.name)
     end
   end
 }
