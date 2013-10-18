@@ -1,14 +1,45 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>YetiFinderRails</title>
-  <%= stylesheet_link_tag    "application", :media => "all" %>
-  <%= javascript_include_tag "application" %>
-  <%= csrf_meta_tags %>
+  	<meta charset="utf-8" />
+  	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  	<%= csrf_meta_tag %>
+  	<title>Yeti Finder</title>
+  	<%= stylesheet_link_tag    "bootstrap.min", :media => "all" %>
+  	<%= stylesheet_link_tag    "site", :media => "all" %>
+  	<%= stylesheet_link_tag    "gridview", :media => "all" %>
+  	
+  	<%= javascript_include_tag "jquery-1.9.1.min" %>
+  	<%= javascript_include_tag "bootstrap.min" %>
+  	<%= javascript_include_tag "jquery.placeholder.min" %>
+  	<%= javascript_include_tag "jquery.validate.min" %>
+  	<%= javascript_include_tag "jquery.validate.extension" %>
+    <%= javascript_include_tag "jquery.pstrength-min.1.2" %>
+    <%= javascript_include_tag "application" %>
+    <%= javascript_include_tag "gridview" %>
+    
+    <script type="text/javascript" language="JavaScript">
+		var __RootURL = "<%=url_for(:controller => "/yeti", :action=>"index")%>";
+    </script>
 </head>
 <body>
-
-<%= yield %>
-
+	<div class="page">
+		<div class="header">
+			<div class="panel">
+				<div class="title">Yeti Finder</div>
+			</div>
+		</div>
+        <div class="content">
+            <%= yield %>
+        </div>
+        <div class="footer">
+        </div>
+	</div>
 </body>
 </html>
+<%= javascript_include_tag "mediaqueriresforIElt9.min" %>
+<script type="text/javascript" language="javascript">
+    $(document).ready(function() {
+        $('input[type=text], textarea').placeholder();
+    });
+</script>

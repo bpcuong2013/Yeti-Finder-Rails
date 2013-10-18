@@ -1,0 +1,49 @@
+﻿.grid_view{
+    width: 100%;
+}
+.grid_header{
+    cursor: pointer;
+}
+.grid_header .header_text,
+.grid_header .header_sort_indicator {
+    float: left;
+    margin-left: 4px;
+}
+.grid_header .header_sort_indicator {
+    width: 16px;
+    height: 16px;
+    margin-left: 2px;
+}
+.empty_row{
+    height: 50px;
+}
+.grid_row_alternate{
+}
+.grid_row_selected{
+}
+.grid_row_hover{
+    background-color: #2e9adb !important;
+    color: #fff;
+    cursor: default;
+}
+.grid_row_hover a{
+    color: #fff;
+}
+.grid_sort_down {
+    background: url(/assets/up_down.png) no-repeat;
+}
+.grid_sort_up {
+    background: url(/assets/up_down.png) no-repeat scroll 0 -16px;
+}
+.grid_hidden {
+    display: none;
+}
+.cell-left {
+    text-align: left !important;
+}
+.cell-right {
+    text-align: right !important;
+}
+.cell-center {
+    text-align: center !important;
+}
