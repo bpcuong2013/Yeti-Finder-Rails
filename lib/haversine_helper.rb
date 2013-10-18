@@ -37,4 +37,8 @@ class HaversineHelper
     
     return c
   end
+  
+  def power(num, pow)
+    num ** pow
+  end
 end

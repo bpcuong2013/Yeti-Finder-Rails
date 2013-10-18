@@ -99,12 +99,17 @@ class YetiFindingController < ApplicationController
     user = User.find(user_id)
     found_yeti_ids = user.finds.map { |m| m[:yeti_id] }
     
-    available_yetis = Yeti.where("city_id = :city_id AND id NOT IN (:yeti_ids)", { city_id: user.city_id, yeti_ids: found_yeti_ids })
+    available_yetis = []
+    if (found_yeti_ids.size > 0)
+      available_yetis = Yeti.where("city_id = :city_id AND id NOT IN (:yeti_ids)", { city_id: user.city_id, yeti_ids: found_yeti_ids })
+    else
+      available_yetis = Yeti.find_all_by_city_id(user.city_id)
+    end
     in_range_yetis = []
     
     haversineHelper = HaversineHelper.new
     available_yetis.each do |yeti|
-      if haversineHelper.distanceInMile(latitude, longitude, convertFloat(yeti.lat), convertFloat(yeti.long)) <= 5000 # compare values in miles
+      if haversineHelper.distanceInMile(latitude, longitude, convertFloat(yeti.lat), convertFloat(yeti.long)) <= 5 # compare values in miles
         in_range_yetis.push yeti
       end
     end
