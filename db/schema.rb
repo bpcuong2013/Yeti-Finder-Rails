@@ -40,8 +40,9 @@ ActiveRecord::Schema.define(:version => 20131016034751) do
     t.string   "long"
     t.string   "name"
     t.string   "description"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.boolean  "is_anonymous", :default => true
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
   end
 
 end

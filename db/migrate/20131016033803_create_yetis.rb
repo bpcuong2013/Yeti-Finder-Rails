@@ -6,6 +6,7 @@ class CreateYetis < ActiveRecord::Migration
       t.string :long
       t.string :name
       t.string :description
+      t.boolean :is_anonymous, :default => true
 
       t.timestamps
     end
