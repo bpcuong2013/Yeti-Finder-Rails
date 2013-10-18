@@ -10,10 +10,10 @@ class AppHelper
           deleted_yeti_ids.push yeti.id
         end
       end
-      
-      if (deleted_yeti_ids.size > 0)
-        Yeti.where("id IN (:ids)", { ids: deleted_yeti_ids }).destroy_all
-      end
+    end
+    
+    if (deleted_yeti_ids.size > 0)
+      Yeti.where("id IN (:ids)", { ids: deleted_yeti_ids }).destroy_all
     end
   end
   
