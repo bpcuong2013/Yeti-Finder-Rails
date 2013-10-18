@@ -5,7 +5,7 @@ class ScheduleWorker
   
   def perform(city_id, city_name)
     appHelper = AppHelper.new
-    appHelper.deleteOldYetis(city_id)
+    appHelper.deleteAnonymousYetis(city_id)
     appHelper.createNewYetis(city_id, city_name, FoursquareHelper.SELECTED_SEARCH_TERM)
   rescue Exception => ex
     logger.error "=============Run city id = " + city_id.to_s + ", " + city_name + " failed=============="

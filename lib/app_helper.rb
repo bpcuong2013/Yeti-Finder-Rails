@@ -1,6 +1,6 @@
 class AppHelper
-  def deleteOldYetis(city_id)
-    yetis = Yeti.find_all_by_city_id(city_id)
+  def deleteAnonymousYetis(city_id)
+    yetis = Yeti.where("city_id" => city_id, "is_anonymous" => true)
     deleted_yeti_ids = Array.new
     
     if (yetis.size > 0)
