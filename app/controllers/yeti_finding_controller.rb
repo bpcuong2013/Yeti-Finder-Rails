@@ -80,10 +80,10 @@ class YetiFindingController < ApplicationController
     latitude = convertFloat(params[:latitude])
     user_id = params[:user_id]
     
-    user = User.find_by_id(user_id)
+    user = User.find(user_id)
     found_yeti_ids = user.finds.map { |m| m[:yeti_id] }
     
-    available_yetis = Yeti.where("city_id = :city_id AND id NOT IN :yeti_ids", { city_id: user.city_id, yeti_ids: found_yeti_ids })
+    available_yetis = Yeti.where("city_id = :city_id AND id NOT IN (:yeti_ids)", { city_id: user.city_id, yeti_ids: found_yeti_ids })
     in_range_yetis = []
     
     haversineHelper = HaversineHelper.new
@@ -137,6 +137,26 @@ class YetiFindingController < ApplicationController
   
   def getScoreboard
     user_id = params[:user_id]
+    current_user = User.find(user_id)    
+    users = User.find_all_by_city_id(current_user.city_id)
+    scoreboard = []
+    
+    time_range = (Time.now.midnight - 6.days)..Time.now    
+    
+    users.each do |user|
+      # Refer at http://guides.rubyonrails.org/active_record_querying.html#specifying-conditions-on-the-joined-tables
+      count = Find.where("user_id" => user.id, "created_at" => time_range).count(1)
+      if count >= 1
+        score = { "user_id" => user.id, "user_name" => user.name, "score" => count }
+        scoreboard.push score
+      end
+    end
+    
+    respond_to do |format|
+      format.json {
+        render :json => { :success => true, :data => scoreboard }
+      }
+    end
   rescue Exception => ex
     logger.fatal "Exception in getScoreboard action: " + ex.message
     respond_to do |format|
