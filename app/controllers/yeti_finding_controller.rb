@@ -59,17 +59,27 @@ class YetiFindingController < ApplicationController
     user_name = params[:user_name]
     
     city = City.find_by_name(city_name)
-    user = User.new
-    user.city_id = city.id
-    user.device_id = device_id
-    user.name = user_name
-    
-    user.save
-    
-    respond_to do |format|
-      format.json {
-        render :json => { :success => true, :data => user.id }
-      }
+    if (city != nil)
+      user = User.find_by_device_id(device_id)
+      if (user == nil)
+        user = User.new
+        user.city_id = city.id
+        user.device_id = device_id
+        user.name = user_name
+      
+        user.save
+      else
+        user.city_id = city.id
+        user.save
+      end
+      
+      respond_to do |format|
+        format.json {
+          render :json => { :success => true, :data => user.id }
+        }
+      end
+    else
+      raise "Not found city '#{city_name}'"
     end
   rescue Exception => ex
     logger.fatal "Exception in joinSystem action: " + ex.message
