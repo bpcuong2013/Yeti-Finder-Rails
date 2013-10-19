@@ -3,7 +3,7 @@ require 'clockwork'
 require 'date'
 require './config/boot'
 require './config/environment'
-require './app/workers/ScheduleWorker'
+require './app/workers/schedule_worker'
 
 include Clockwork
 
