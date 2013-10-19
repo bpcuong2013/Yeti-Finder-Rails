@@ -1,2 +1,281 @@
-<h1>Yeti#index</h1>
-<p>Find me in app/views/yeti/index.html.erb</p>
+<div class="">
+	<h2>Named yetis</h2>
+	<div class="control-group">
+		<label class="control-label">Please select city</label>
+		<select class="input-block-level" id="selectCity" name="selectCity"></select>
+	</div>
+	<div class="control-group list_container" id="divYeti"></div>
+	<button class="btn btn-primary btn-large" data-dismiss="modal" id="btnAddYeti">Add named yeti...</button>
+	<div id="divMainProcessing" class="processing"></div>	
+</div>
+<br />
+
+<div id="divConfirmDelete" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+		<h3>Delete named yeti</h3>
+	</div>
+	<div class="modal-body">
+		<input type="hidden" id="hiddenDeletedId" name="hiddenDeletedId" />
+		<p>Are you sure you want to delete this named yeti?</p>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-danger" data-dismiss="modal" id="btnDeleteYeti">Yes</button>
+		<button class="btn btn-primary" data-dismiss="modal">Cancel</button>
+	</div>
+</div>
+
+<div id="divCreateYeti" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+		<h3>Add named yeti</h3>
+	</div>
+	<div class="modal-body">
+		<div class="control-group">
+			<label class="control-label" for="yetiName">Yeti name</label>
+			<input type="text" maxlength="255" id="yetiName" name="yetiName" placeholder="Yeti name" class="input-block-level" required />
+		</div>
+		<div class="control-group">
+			<label class="control-label" for="yetiLatitude">Latitude &nbsp;&nbsp;&nbsp;<i>(Valid range is -90 to +90. "+" for North and "-" for South)</i></label>
+			<input type="text" maxlength="255" id="yetiLatitude" name="yetiLatitude" placeholder="Latitude" class="input-block-level" required />
+		</div>
+		<div class="control-group">
+			<label class="control-label" for="yetiLongitude">Longitude &nbsp;&nbsp;&nbsp;<i>(Valid range is -180 to +180. "-" for West and "+" for East)</i></label>
+			<input type="text" maxlength="255" id="yetiLongitude" name="yetiLongitude" placeholder="Longitude" class="input-block-level" required />
+		</div>
+		<div class="control-group">
+			<label class="control-label" for="yetiDescription">Description</label>
+			<input type="text" maxlength="255" id="yetiDescription" name="yetiDescription" placeholder="Description" class="input-block-level" required />
+		</div>
+		<div class="control-group">
+			<div id="save-yeti-processing" class="processing"></div>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary" id="btnSaveYeti">Save</button>
+		<button class="btn" data-dismiss="modal" id="btnCancelAddingYeti">Cancel</button>
+	</div>
+</div>
+
+<script language="javascript" type="text/javascript">
+	/*
+	 * Refer at https://portal.fema.gov/FEMAMitigation/fma_help/lat.html
+	 * 
+	 * Latitude: Valid range is -90 to +90
+	 *           "+" for North and "-" for South
+	 * 
+	 * Longitude: Valid range is -180 to +180
+	 *            "-" for West and "+" for East
+	 * 
+	 * Data entry requires a "-" entered for each negative entry.
+	 * A "+" sign is not required before positive entries
+	 */
+	
+    // Refer at http://jsfiddle.net/nRha8/2/
+	var _latitudeFormat = /^-?([0-8]?[0-9]|90)\.[0-9]{1,6}$/;
+	var _longitudeFormat = /^-?((1?[0-7]?|[0-9]?)[0-9]|180)\.[0-9]{1,6}$/;
+	
+	function loadCities() {
+		$("#divMainProcessing").html(getProcessingHtml("Fetching cities...", __RootURL));
+		$.ajax({
+			url: "<%= url_for(controller: "yeti", action: "listCities") %>",
+			type: "GET",
+			success: function(result) {
+				if (result.success) {
+					$("#divMainProcessing").html("");
+					renderCities(result.data);
+				} else {
+					$("#divMainProcessing").html(getErrorHtml(result.msg));	
+				}
+			},
+			error: function(){
+				$("#divMainProcessing").html(getErrorHtml());
+			}
+		});
+    }
+	
+	function renderCities(cities) {
+		$("#selectCity").html("");
+		
+		var count = cities == null ? 0 : cities.length;
+		if (count > 0) {
+			for (var index = 0; index < count; index++) {
+				var id = cities[index].id;
+				var name = cities[index].name;				
+				$("#selectCity").append($("<option></option>").attr("value", id).text(name));
+			}
+			
+			$("#selectCity").val(cities[0].id);
+		}
+		
+		loadYetis();
+	}
+	
+	function loadYetis() {
+		var city_id = $("#selectCity").val();
+		if (city_id == null || city_id == undefined) {
+			city_id = "";
+		}
+		
+		if (city_id != "") {
+			$("#divMainProcessing").html(getProcessingHtml("Fetching yetis...", __RootURL));
+			$.ajax({
+				url: "<%= url_for(controller: "yeti", action: "listNamedYetis") %>",
+				type: "GET",
+				data: { city_id: city_id },
+				success: function(result) {
+					if (result.success) {
+						$("#divMainProcessing").html("");
+						renderYetis(result.data);
+					} else {
+						$("#divMainProcessing").html(getErrorHtml(result.msg));	
+					}
+				},
+				error: function(){
+					$("#divMainProcessing").html(getErrorHtml());
+				}
+			});
+		}
+	}
+	
+	function renderYetis(yetis) {
+		$("#divYeti").html("");
+		var columns = new Array();
+		columns.push({ field: "id", key: true, visible: false });
+		columns.push({ field: "name", display: "Yeti name" });
+		columns.push({ field: "lat", display: "Latitude" });
+		columns.push({ field: "long", display: "Longitude" });
+		columns.push({ field: "description", display: "Description" });
+		columns.push({ display: "", width: "10%", align: "center", customTemplateFunc: actionColumn });
+		
+		new GridView($("#divYeti"), columns, yetis, "No yeti found", null, null);
+		$("div.list_container table").addClass("table");
+		$("div.list_container table").addClass("table-bordered");
+		
+		$("a[class='delete_yeti']").click(function(e) {
+			e.preventDefault();
+			
+			$("#divConfirmDelete").modal({
+				backdrop: 'static',
+				keyboard: true
+			});
+			
+			$("#hiddenDeletedId").val($(this).attr("id"));
+		});
+	}
+	
+	function actionColumn(rowObj) {
+		return "<a class='delete_yeti' id='" + rowObj.id + "'>Delete</a>";
+	}
+	
+	$(document).ready(function() {
+		loadCities();
+		//loadYetis();
+		
+		$("#selectCity").change(function(e) {
+			loadYetis();
+		});
+		
+		$("#btnDeleteYeti").click(function(e) {
+			e.preventDefault();
+			var deletedId = $("#hiddenDeletedId").val();
+			$("#divMainProcessing").html(getProcessingHtml("Deleting yeti...", __RootURL));
+			$.ajax({
+				url: "<%= url_for(controller: "yeti", action: "deleteNamedYeti") %>",
+				type: "GET",
+				data: { yeti_id: deletedId },
+				success: function(result) {
+					if (result.success){
+						$("#divMainProcessing").html("");
+						loadYetis();
+					}
+					else{
+						$("#divMainProcessing").html(getErrorHtml(result.msg));	
+					}
+				},
+				error: function() {
+					$("#divMainProcessing").html(getErrorHtml());
+				}
+			});
+		});
+		
+		$("#btnAddYeti").click(function(e) {
+			e.preventDefault();
+			
+			var city_id = $("#selectCity").val();
+			if (city_id != null && city_id != undefined && city_id != "") {
+				$("#divCreateYeti").modal({
+					backdrop: 'static',
+					keyboard: true
+				});
+				
+				$("#save-yeti-processing").html("");
+				$("#divCreateYeti #yetiName").val("");
+				$("#divCreateYeti #yetiLatitude").val("");
+				$("#divCreateYeti #yetiLongitude").val("");
+				$("#divCreateYeti #yetiDescription").val("");
+				$("#divCreateYeti #yetiName").focus();
+			}
+		});
+		
+		$("#divCreateYeti #btnSaveYeti").click(function(e) {
+			e.preventDefault();
+			
+			var yetiName = $.trim($("#divCreateYeti #yetiName").val());
+			if (yetiName == "") {
+				alert("Yeti name is required.");
+				$("#divCreateYeti #yetiName").focus();
+				return;
+			}
+			
+			var yetiLatitude = $.trim($("#divCreateYeti #yetiLatitude").val());
+			if (yetiLatitude == "") {
+				alert("Latitude is required.");
+				$("#divCreateYeti #yetiLatitude").focus();
+				return;
+			} else if(isNaN(yetiLatitude) || !_latitudeFormat.test(yetiLatitude)) {
+				alert("Latitude is not correctly typed.");
+				$("#divCreateYeti #yetiLatitude").focus();
+				return;
+			}
+			
+			var yetiLongitude = $.trim($("#divCreateYeti #yetiLongitude").val());
+			if (yetiLongitude == "") {
+				alert("Longitude is required.");
+				$("#divCreateYeti #yetiLongitude").focus();
+				return;
+			} else if(isNaN(yetiLongitude) || !_longitudeFormat.test(yetiLongitude)) {
+				alert("Longitude is not correctly typed.");
+				$("#divCreateYeti #yetiLongitude").focus();
+				return;
+			}
+			
+			var description = $.trim($("#divCreateYeti #yetiDescription").val());
+			var city_id = $("#selectCity").val();
+			
+			$("#save-yeti-processing").html(getProcessingHtml("Saving data...", __RootURL));
+			$.ajax({
+				url: "<%= url_for(controller: "yeti", action: "createNamedYeti") %>",
+				type: "POST",
+				beforeSend: function(xhr) {
+					xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+				},
+				data: JSON.stringify({ city_id: city_id, yeti_name: yetiName, latitude: yetiLatitude, longitude: yetiLongitude, yeti_desc: description }),
+				contentType: "application/json; charset=utf-8",
+				success: function(result) {
+					if (result.success) {
+						$("#save-yeti-processing").html("");
+						$("#divCreateYeti #btnCancelAddingYeti").trigger("click");
+						loadYetis();
+					}
+					else {
+						$("#save-yeti-processing").html(getErrorHtml(result.msg));	
+					}
+				},
+				error: function() {
+					$("#save-yeti-processing").html(getErrorHtml());
+				}
+			});
+		});
+	});
+</script>

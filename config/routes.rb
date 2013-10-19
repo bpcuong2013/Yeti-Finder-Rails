@@ -4,9 +4,9 @@ YetiFinderRails::Application.routes.draw do
   root :to                      => 'yeti#index'
   get '/'                       => 'yeti#index'
   get '/yeti/listCities'        => 'yeti#listCities'
-  get '/yeti/listYetis'         => 'yeti#listYetis'
+  get '/yeti/listNamedYetis'    => 'yeti#listNamedYetis'
   post '/yeti/createNamedYeti'  => 'yeti#createNamedYeti'
-  post '/yeti/deleteNamedYeti'  => 'yeti#deleteNamedYeti'
+  get '/yeti/deleteNamedYeti'  => 'yeti#deleteNamedYeti'
   
   post '/yeti_finding/detectDevice'     => 'yeti_finding#detectDevice'
   post '/yeti_finding/joinSystem'       => 'yeti_finding#joinSystem'

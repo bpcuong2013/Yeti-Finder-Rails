@@ -19,9 +19,10 @@ class YetiController < ApplicationController
     end
   end
   
-  def listYetis
+  def listNamedYetis
     city_id = params[:city_id]
-    yetis = Yeti.find_all_by_city_id(city_id)
+    yetis = Yeti.where("city_id = :city_id AND is_anonymous = :is_anonymous", { city_id: city_id, is_anonymous: false })
+    #yetis = Yeti.find_all_by_city_id(city_id)
     
     respond_to do |format|
       format.json {
