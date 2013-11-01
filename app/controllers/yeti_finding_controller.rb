@@ -133,8 +133,8 @@ class YetiFindingController < ApplicationController
     user_id = params[:user_id]
     yeti_id = params[:yeti_id]
     
-    yetiFound = Find.where("user_id = :user_id AND yeti_id = :yeti_id", { user_id: user_id, yeti_id: yeti_id })
-    if yetiFound == nil
+    count = Find.where("user_id = :user_id AND yeti_id = :yeti_id", { user_id: user_id, yeti_id: yeti_id }).count(1)
+    if count < 1
       yetiFound = Find.new
       yetiFound.user_id = user_id
       yetiFound.yeti_id = yeti_id

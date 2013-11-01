@@ -16,6 +16,12 @@ class GoogleMapHelper
       parsed_response["GeocodeResponse"]["result"].each do |result|
         if result["type"].eql? "postal_town"
           return result["formatted_address"]
+          #address_components = result["address_component"]
+          #address_components.each do |component|
+          #  if (component["type"].eql? "postal_town")
+          #    return component["long_name"]
+          #  end
+          #end
         end
       end
       
