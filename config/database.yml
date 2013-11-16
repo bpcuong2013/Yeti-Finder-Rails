@@ -19,7 +19,7 @@ test:
 production:
   adapter: postgresql
   encoding: unicode
-  host: ec2-54-225-218-144.compute-1.amazonaws.com
+  host: ec2-23-23-80-55.compute-1.amazonaws.com
   port: 5432
   database: dcufkd1drjus98
   username: ddnblafozgkhxy
