@@ -12,6 +12,7 @@ class GoogleMapHelper
     
     error_code = parsed_response["GeocodeResponse"]["status"]
     
+    # Refer https://developers.google.com/maps/documentation/javascript/geocoding?hl=vi to extract city
     if error_code.eql? "OK"
       parsed_response["GeocodeResponse"]["result"].each do |result|
         if result["type"].eql? "postal_town"
@@ -22,6 +23,25 @@ class GoogleMapHelper
           #    return component["long_name"]
           #  end
           #end
+        end
+      end
+      
+      parsed_response["GeocodeResponse"]["result"].each do |result|
+        types = result["type"]
+        if (types.is_a? Array)
+          if ((types.include? "locality") || (types.include? "sublocality"))
+            address_components = result["address_component"]
+            address_components.each do |component|
+              localTypes = component["type"]
+              if (localTypes.eql? "locality")
+                return component["long_name"]
+              end
+              
+              if ((localTypes.is_a? Array) && (localTypes.include? "locality"))
+                return component["long_name"]
+              end
+            end
+          end
         end
       end
       
